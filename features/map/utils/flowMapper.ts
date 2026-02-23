@@ -36,6 +36,10 @@ export function formatGeneratedData(data: any, styles: ThemeConfig): { nodes: No
       style: { stroke: styles.edge, strokeWidth: 2, opacity: 0.6 },
       animated: true,
       labelStyle: { fill: styles.edgeLabel, fontWeight: 500, fontSize: 12 },
+      // FIX: Explicitly style the label background to prevent black boxes on export
+      labelBgStyle: { fill: styles.bg },
+      labelBgPadding: [8, 4],
+      labelBgBorderRadius: 4,
     }));
 
   return getLayoutedElements(rawNodes, rawEdges, false);
@@ -62,6 +66,10 @@ export function formatHistoryData(item: HistoryItem, styles: ThemeConfig): { nod
       style: { ...edge.style, stroke: styles.edge },
       markerEnd: { type: MarkerType.ArrowClosed, color: styles.edge },
       labelStyle: { ...(edge.labelStyle || {}), fill: styles.edgeLabel },
+      // FIX: Apply background styling to history maps as well
+      labelBgStyle: { fill: styles.bg },
+      labelBgPadding: [8, 4],
+      labelBgBorderRadius: 4,
     })) as Edge[];
 
   return { nodes: themedNodes, edges: themedEdges };
