@@ -9,7 +9,7 @@ interface UseMapSyncProps {
 }
 
 export function useMapSync({ history, setHistory }: UseMapSyncProps) {
-  const [user, setUser] = useState<any>(null); 
+  const [user, setUser] = useState<Record<string, unknown> | null>(null);
   const [isSyncing, setIsSyncing] = useState<boolean>(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
   const [syncError, setSyncError] = useState<string | null>(null);
@@ -53,7 +53,7 @@ export function useMapSync({ history, setHistory }: UseMapSyncProps) {
       } else {
         setHistory(safeCloudMaps as HistoryItem[]);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Sync Network Error:", err);
       setSyncError("Failed to connect to the cloud.");
     } finally {
@@ -73,7 +73,7 @@ export function useMapSync({ history, setHistory }: UseMapSyncProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleAuthSuccess = async (authUser: any) => {
+  const handleAuthSuccess = async (authUser: Record<string, unknown>) => {
     setUser(authUser);
     await performSmartSync(history);
   };
@@ -87,7 +87,7 @@ export function useMapSync({ history, setHistory }: UseMapSyncProps) {
           await checkAuthError(deleteError, "Failed to delete maps from cloud.");
           return;
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error("Delete Network Error:", err);
         setSyncError("Failed to connect to the cloud.");
       } finally {
@@ -105,7 +105,7 @@ export function useMapSync({ history, setHistory }: UseMapSyncProps) {
         if (error) {
           await checkAuthError(error, "Failed to delete map from cloud.");
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error("Delete Single Network Error:", err);
       } finally {
         setIsSyncing(false); // <-- FIX: Turn off the UI sync state

@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 
 interface AiGenerationProps {
-  onSuccess: (data: any, prompt: string) => void;
+  onSuccess: (data: { nodes: Record<string, unknown>[]; edges: Record<string, unknown>[] }, prompt: string) => void;
   onError: (error: string) => void;
 }
 
@@ -34,10 +34,10 @@ export function useAiGeneration({ onSuccess, onError }: AiGenerationProps) {
       if (data.nodes && data.edges) {
         onSuccess(data, prompt);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       if (progressInterval.current) clearInterval(progressInterval.current);
       setProgress(0);
-      onError(err.message || "Failed to connect to server");
+      onError(err instanceof Error ? err.message : "Failed to connect to server");
     } finally {
       setTimeout(() => {
         setIsGenerating(false);

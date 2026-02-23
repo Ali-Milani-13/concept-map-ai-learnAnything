@@ -34,8 +34,8 @@ export function useAuth({ onAuthSuccess, onClose }: UseAuthProps) {
       } else if (!isLogin && result.user) {
         setError("Success! Please check your email for the confirmation link, then log in.");
       }
-    } catch (err: any) {
-      setError(err.message || "An unexpected error occurred.");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "An unexpected error occurred.");
     } finally {
       setLoading(false);
     }

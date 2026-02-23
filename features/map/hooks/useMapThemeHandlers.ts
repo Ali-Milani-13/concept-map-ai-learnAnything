@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { Node, Edge, MarkerType } from "@xyflow/react";
+import { MarkerType } from "@xyflow/react";
 import { UseMapThemeHandlersProps } from "../types";
 import { THEMES, ThemeMode } from "./useMapLayout";
 

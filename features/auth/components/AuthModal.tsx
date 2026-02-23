@@ -6,7 +6,7 @@ interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
   theme: 'light' | 'dark';
-  onAuthSuccess: (user: any) => void;
+  onAuthSuccess: (user: Record<string, unknown>) => void;
 }
 
 export default function AuthModal({ isOpen, onClose, theme, onAuthSuccess }: AuthModalProps) {

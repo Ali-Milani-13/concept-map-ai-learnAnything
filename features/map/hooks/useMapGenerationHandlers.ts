@@ -8,7 +8,7 @@ export function useMapGenerationHandlers({
   setShowLegend, setPreFormatState, setGlobalError, addHistoryItem, pushNewMapToCloud
 }: UseMapGenerationHandlersProps) {
 
-  const onGenerationSuccess = useCallback((data: any, prompt: string) => {
+const onGenerationSuccess = useCallback((data: { nodes: Record<string, unknown>[]; edges: Record<string, unknown>[] }, prompt: string) => {
     const { nodes: lNodes, edges: lEdges } = formatGeneratedData(data, THEMES[theme]);
     
     setNodes(lNodes);
