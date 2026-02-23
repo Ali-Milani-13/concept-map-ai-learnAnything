@@ -54,7 +54,13 @@ export async function fetchCloudMaps() {
 }
 
 // 3. Sync: Push local maps to the cloud
-export async function syncMapToCloud(mapData: any) {
+export async function syncMapToCloud(mapData: { 
+  prompt?: string; 
+  nodes: unknown[]; 
+  edges: unknown[]; 
+  explanations?: Record<string, string>; 
+  subMaps?: Record<string, unknown> 
+}) {
   const supabase = await getAuthenticatedClient();
   const session = await getEncryptedSession();
   
@@ -91,6 +97,7 @@ export async function deleteAllCloudMaps() {
   if (error) return { error: error.message };
   return { success: true };
 }
+
 // 5. Delete Single Map
 export async function deleteSingleCloudMap(prompt: string) {
   const supabase = await getAuthenticatedClient();

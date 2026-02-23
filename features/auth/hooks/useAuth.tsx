@@ -2,7 +2,7 @@ import { useState, FormEvent } from 'react';
 import { authenticateUser } from '../actions/auth.actions';
 
 interface UseAuthProps {
-  onAuthSuccess: (user: any) => void;
+  onAuthSuccess: (user: Record<string, unknown>) => void;
   onClose: () => void;
 }
 
@@ -29,7 +29,7 @@ export function useAuth({ onAuthSuccess, onClose }: UseAuthProps) {
       if (result.error) throw new Error(result.error);
 
       if (result.hasSession) {
-        onAuthSuccess(result.user);
+        onAuthSuccess(result.user as Record<string, unknown>);
         onClose();
       } else if (!isLogin && result.user) {
         setError("Success! Please check your email for the confirmation link, then log in.");

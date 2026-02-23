@@ -3,7 +3,7 @@ import { cookies } from 'next/headers';
 import crypto from 'crypto';
 
 export interface SessionData {
-  user?: any;
+  user?: Record<string, unknown>;
   access_token?: string;
   refresh_token?: string;
 }

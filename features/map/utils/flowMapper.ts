@@ -42,7 +42,7 @@ export function formatGeneratedData(data: { nodes: RawNode[]; edges: RawEdge[] }
       seenTargets.add(e.target);
       return true;
     })
-    .map((edge: any, index: number) => ({
+    .map((edge: Record<string, unknown>, index: number) => ({
       ...edge,
       id: `e-${edge.source}-${edge.target}-${index}`,
       type: "default",

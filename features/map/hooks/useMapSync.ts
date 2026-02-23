@@ -41,7 +41,7 @@ export function useMapSync({ history, setHistory }: UseMapSyncProps) {
       }
 
       const safeCloudMaps = cloudMaps || [];
-      const cloudPrompts = new Set(safeCloudMaps.map((m: any) => m.prompt));
+      const cloudPrompts = new Set(safeCloudMaps.map((m: HistoryItem) => m.prompt));
       const localOnlyMaps = currentLocalHistory.filter((m) => !cloudPrompts.has(m.prompt));
 
       if (localOnlyMaps.length > 0) {
@@ -96,10 +96,9 @@ export function useMapSync({ history, setHistory }: UseMapSyncProps) {
     }
   };
 
-// NEW: Delete a single map from the cloud
   const deleteSingleMapFromCloud = async (prompt: string) => {
     if (user) {
-      setIsSyncing(true); // <-- FIX: Trigger the UI sync state
+      setIsSyncing(true);
       try {
         const { error } = await deleteSingleCloudMap(prompt);
         if (error) {
@@ -108,7 +107,7 @@ export function useMapSync({ history, setHistory }: UseMapSyncProps) {
       } catch (err: unknown) {
         console.error("Delete Single Network Error:", err);
       } finally {
-        setIsSyncing(false); // <-- FIX: Turn off the UI sync state
+        setIsSyncing(false);
       }
     }
   };
