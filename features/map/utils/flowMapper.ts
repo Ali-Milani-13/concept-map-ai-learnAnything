@@ -12,11 +12,11 @@ export interface RawNode {
 export interface RawEdge {
   source: string | number;
   target: string | number;
+  label?: string;
   [key: string]: unknown;
 }
-export function formatGeneratedData(data: { nodes: RawNode[]; edges: RawEdge[] }, styles: ThemeConfig): { nodes: Node[], edges: Edge[] } {
 
-  
+export function formatGeneratedData(data: { nodes: RawNode[]; edges: RawEdge[] }, styles: ThemeConfig): { nodes: Node[], edges: Edge[] } {
   const rawNodes: Node[] = data.nodes.map((node: RawNode) => ({
     id: String(node.id),
     type: "default",
@@ -37,24 +37,25 @@ export function formatGeneratedData(data: { nodes: RawNode[]; edges: RawEdge[] }
   const rawEdges: Edge[] = data.edges
     .map((edge: RawEdge) => ({ ...edge, source: String(edge.source), target: String(edge.target) }))
     .filter((e: RawEdge) => {
-      if (!e.source || !e.target || e.source === e.target || !validNodeIds.has(e.source) || !validNodeIds.has(e.target)) return false;
+      if (!e.source || !e.target || e.source === e.target || !validNodeIds.has(e.source as string) || !validNodeIds.has(e.target as string)) return false;
       if (seenTargets.has(e.target)) return false;
       seenTargets.add(e.target);
       return true;
     })
-    .map((edge: Record<string, unknown>, index: number) => ({
+    .map((edge: RawEdge, index: number) => ({
       ...edge,
       id: `e-${edge.source}-${edge.target}-${index}`,
+      source: String(edge.source),
+      target: String(edge.target),
       type: "default",
       markerEnd: { type: MarkerType.ArrowClosed, color: styles.edge },
       style: { stroke: styles.edge, strokeWidth: 2, opacity: 0.6 },
       animated: true,
       labelStyle: { fill: styles.edgeLabel, fontWeight: 500, fontSize: 12 },
-      // FIX: Explicitly style the label background to prevent black boxes on export
       labelBgStyle: { fill: styles.bg },
-      labelBgPadding: [8, 4],
+      labelBgPadding: [8, 4] as [number, number],
       labelBgBorderRadius: 4,
-    }));
+    } as Edge));
 
   return getLayoutedElements(rawNodes, rawEdges, false);
 }
@@ -76,15 +77,17 @@ export function formatHistoryData(item: HistoryItem, styles: ThemeConfig): { nod
       return true;
     })
     .map((edge) => ({
-      ...edge, type: "default",
+      ...edge,
+      source: String(edge.source),
+      target: String(edge.target),
+      type: "default",
       style: { ...edge.style, stroke: styles.edge },
       markerEnd: { type: MarkerType.ArrowClosed, color: styles.edge },
       labelStyle: { ...(edge.labelStyle || {}), fill: styles.edgeLabel },
-      // FIX: Apply background styling to history maps as well
       labelBgStyle: { fill: styles.bg },
-      labelBgPadding: [8, 4],
+      labelBgPadding: [8, 4] as [number, number],
       labelBgBorderRadius: 4,
-    })) as Edge[];
+    } as Edge));
 
   return { nodes: themedNodes, edges: themedEdges };
 }

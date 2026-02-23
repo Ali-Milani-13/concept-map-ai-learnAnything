@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { THEMES } from "./useMapLayout";
-import { formatGeneratedData } from "../utils/flowMapper";
+import { formatGeneratedData, RawNode, RawEdge } from "../utils/flowMapper";
 import { UseMapGenerationHandlersProps } from "../types";
 
 export function useMapGenerationHandlers({
@@ -8,8 +8,12 @@ export function useMapGenerationHandlers({
   setShowLegend, setPreFormatState, setGlobalError, addHistoryItem, pushNewMapToCloud
 }: UseMapGenerationHandlersProps) {
 
-const onGenerationSuccess = useCallback((data: { nodes: Record<string, unknown>[]; edges: Record<string, unknown>[] }, prompt: string) => {
-    const { nodes: lNodes, edges: lEdges } = formatGeneratedData(data, THEMES[theme]);
+  const onGenerationSuccess = useCallback((data: { nodes: Record<string, unknown>[]; edges: Record<string, unknown>[] }, prompt: string) => {
+    // Cast the generic Record objects to the specific RawNode/RawEdge interfaces
+    const { nodes: lNodes, edges: lEdges } = formatGeneratedData(
+      data as unknown as { nodes: RawNode[]; edges: RawEdge[] }, 
+      THEMES[theme]
+    );
     
     setNodes(lNodes);
     setEdges(lEdges);
