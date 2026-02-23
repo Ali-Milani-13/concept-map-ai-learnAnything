@@ -18,10 +18,10 @@ jobs:
         uses: actions/checkout@v4
 
       # B. Set up the Node.js environment
-      - name: Setup Node.js 18.x
+      - name: Setup Node.js 20.x
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
           cache: 'npm' # Automatically caches dependencies to speed up future runs
 
       # C. Install dependencies (npm ci is a strict version of npm install for automated environments)
