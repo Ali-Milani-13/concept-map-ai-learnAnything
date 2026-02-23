@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { HistoryItem } from '../../../types';
+import { useState, useEffect } from "react";
+import { HistoryItem } from "../../../types";
 
 export function useHistory() {
   const [history, setHistory] = useState<HistoryItem[]>([]);
@@ -9,8 +9,9 @@ export function useHistory() {
     const saved = localStorage.getItem("aiMapHistory");
     if (saved) {
       try {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setHistory(JSON.parse(saved));
-      } catch (e) {
+      } catch (e: unknown) {
         console.error("Failed to parse local history", e);
       }
     }
@@ -34,7 +35,9 @@ export function useHistory() {
   const clearHistory = () => setHistory([]);
 
   const updateHistoryItem = (id: string, updates: Partial<HistoryItem>) => {
-    setHistory((prev) => prev.map((h) => (h.id === id ? { ...h, ...updates } : h)));
+    setHistory((prev) =>
+      prev.map((h) => (h.id === id ? { ...h, ...updates } : h)),
+    );
   };
 
   return {
@@ -44,6 +47,6 @@ export function useHistory() {
     addHistoryItem,
     deleteHistoryItem,
     clearHistory,
-    updateHistoryItem
+    updateHistoryItem,
   };
 }

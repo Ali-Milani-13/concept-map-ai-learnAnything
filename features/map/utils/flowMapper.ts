@@ -2,8 +2,22 @@ import { Node, Edge, MarkerType } from "@xyflow/react";
 import { ThemeConfig, getLayoutedElements } from "../hooks/useMapLayout";
 import { HistoryItem } from "../../../types";
 
-export function formatGeneratedData(data: any, styles: ThemeConfig): { nodes: Node[], edges: Edge[] } {
-  const rawNodes: Node[] = data.nodes.map((node: any) => ({
+export interface RawNode {
+  id: string | number;
+  label?: string;
+  summary?: string;
+  [key: string]: unknown;
+}
+
+export interface RawEdge {
+  source: string | number;
+  target: string | number;
+  [key: string]: unknown;
+}
+export function formatGeneratedData(data: { nodes: RawNode[]; edges: RawEdge[] }, styles: ThemeConfig): { nodes: Node[], edges: Edge[] } {
+
+  
+  const rawNodes: Node[] = data.nodes.map((node: RawNode) => ({
     id: String(node.id),
     type: "default",
     data: { label: node.label, summary: node.summary },
@@ -21,8 +35,8 @@ export function formatGeneratedData(data: any, styles: ThemeConfig): { nodes: No
   const seenTargets = new Set();
 
   const rawEdges: Edge[] = data.edges
-    .map((edge: any) => ({ ...edge, source: String(edge.source), target: String(edge.target) }))
-    .filter((e: any) => {
+    .map((edge: RawEdge) => ({ ...edge, source: String(edge.source), target: String(edge.target) }))
+    .filter((e: RawEdge) => {
       if (!e.source || !e.target || e.source === e.target || !validNodeIds.has(e.source) || !validNodeIds.has(e.target)) return false;
       if (seenTargets.has(e.target)) return false;
       seenTargets.add(e.target);

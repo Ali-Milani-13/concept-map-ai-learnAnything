@@ -31,7 +31,8 @@ export default function HistorySidebar({
   const isDark = theme === 'dark';
 
   useEffect(() => {
-    if (!isOpen) setConfirmClear(false);
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  if (!isOpen) setConfirmClear(false);
   }, [isOpen]);
 
   if (!isOpen) return null;
