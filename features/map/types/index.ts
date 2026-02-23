@@ -35,6 +35,7 @@ export interface UseMapHistoryHandlersProps {
   updateHistoryItem: (id: string, updates: Partial<HistoryItem>) => void;
   clearHistory: () => void;
   handleDeleteAllCloud: () => Promise<void>;
+  deleteSingleMapFromCloud: (prompt: string) => Promise<void>;
 }
 
 export interface UseMapGenerationHandlersProps {

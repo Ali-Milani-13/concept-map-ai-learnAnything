@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getSession, fetchCloudMaps, syncMapToCloud, deleteAllCloudMaps } from '../actions/map.actions';
+import { getSession, fetchCloudMaps, syncMapToCloud, deleteAllCloudMaps, deleteSingleCloudMap } from '../actions/map.actions';
 import { logoutUser } from '../../auth/actions/auth.actions';
 import { HistoryItem } from '../../../types';
 
@@ -21,7 +21,6 @@ export function useMapSync({ history, setHistory }: UseMapSyncProps) {
     setIsSyncing(false);
   };
 
-  // Helper to silently catch auth errors without triggering Next.js Error Boundaries
   const checkAuthError = async (errorMsg: string, fallbackMsg: string) => {
     if (errorMsg.includes("JWT expired") || errorMsg.includes("Unauthorized") || errorMsg.includes("Invalid token")) {
       setSyncError("Your session has expired. Please log in again.");
@@ -37,14 +36,12 @@ export function useMapSync({ history, setHistory }: UseMapSyncProps) {
       const { maps: cloudMaps, error: fetchError } = await fetchCloudMaps();
       
       if (fetchError) {
-        // Handle it silently and exit early instead of throwing
         await checkAuthError(fetchError, "Failed to sync maps with the cloud.");
         return; 
       }
 
       const safeCloudMaps = cloudMaps || [];
       const cloudPrompts = new Set(safeCloudMaps.map((m: any) => m.prompt));
-
       const localOnlyMaps = currentLocalHistory.filter((m) => !cloudPrompts.has(m.prompt));
 
       if (localOnlyMaps.length > 0) {
@@ -57,7 +54,6 @@ export function useMapSync({ history, setHistory }: UseMapSyncProps) {
         setHistory(safeCloudMaps as HistoryItem[]);
       }
     } catch (err: any) {
-      // This catch is now strictly for unexpected JS errors or Network failures (e.g. no internet)
       console.error("Sync Network Error:", err);
       setSyncError("Failed to connect to the cloud.");
     } finally {
@@ -100,6 +96,23 @@ export function useMapSync({ history, setHistory }: UseMapSyncProps) {
     }
   };
 
+// NEW: Delete a single map from the cloud
+  const deleteSingleMapFromCloud = async (prompt: string) => {
+    if (user) {
+      setIsSyncing(true); // <-- FIX: Trigger the UI sync state
+      try {
+        const { error } = await deleteSingleCloudMap(prompt);
+        if (error) {
+          await checkAuthError(error, "Failed to delete map from cloud.");
+        }
+      } catch (err: any) {
+        console.error("Delete Single Network Error:", err);
+      } finally {
+        setIsSyncing(false); // <-- FIX: Turn off the UI sync state
+      }
+    }
+  };
+
   const pushNewMapToCloud = async (newItem: HistoryItem) => {
     if (user) {
       syncMapToCloud(newItem).then(async (res) => {
@@ -117,6 +130,6 @@ export function useMapSync({ history, setHistory }: UseMapSyncProps) {
     user, isSyncing, syncError, setSyncError,
     isAuthModalOpen, setIsAuthModalOpen,
     handleAuthSuccess, handleLogout,
-    handleDeleteAllCloud, pushNewMapToCloud
+    handleDeleteAllCloud, deleteSingleMapFromCloud, pushNewMapToCloud
   };
 }

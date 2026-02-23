@@ -10,7 +10,7 @@ export default function Legend({ theme, onClose }: LegendProps) {
   const isDark = theme === 'dark';
 
   return (
-    <div className={`absolute bottom-24 md:bottom-6 right-4 md:right-6 p-3 md:p-4 rounded-xl shadow-lg border animate-in fade-in zoom-in-95 duration-300 z-50 ${
+    <div className={`absolute bottom-3.75 left-17.5 p-3 md:p-4 rounded-xl shadow-lg border animate-in fade-in zoom-in-95 duration-300 z-50 ${
       isDark ? 'bg-neutral-900 border-neutral-800 text-gray-300' : 'bg-white border-gray-200 text-gray-600'
     }`}>
       <div className="flex items-center justify-between mb-4 gap-6">

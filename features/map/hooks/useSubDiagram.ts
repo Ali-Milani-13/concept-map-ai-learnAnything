@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Node, Edge } from '@xyflow/react';
+import { Node, Edge, MarkerType } from '@xyflow/react';
+import { formatGeneratedData } from '../utils/flowMapper';
+import { THEMES } from './useMapLayout';
 
 interface UseSubDiagramProps {
   selectedNode: Node | null;
@@ -15,19 +17,30 @@ export function useSubDiagram({ selectedNode, currentTopic, theme, cachedSubMap,
   const [loading, setLoading] = useState<boolean>(false);
   const [saved, setSaved] = useState<boolean>(false);
 
-  const isDark = theme === 'dark';
-
   useEffect(() => {
     if (cachedSubMap) {
-      setNodes(cachedSubMap.nodes);
-      setEdges(cachedSubMap.edges);
+      const styles = THEMES[theme];
+      const themedNodes = cachedSubMap.nodes.map((node) => ({
+        ...node,
+        style: { ...node.style, background: styles.bg, color: styles.color, border: styles.border },
+      }));
+      const themedEdges = cachedSubMap.edges.map((edge) => ({
+        ...edge,
+        style: { ...edge.style, stroke: styles.edge },
+        markerEnd: { type: MarkerType.ArrowClosed, color: styles.edge },
+        labelStyle: { ...(edge.labelStyle || {}), fill: styles.edgeLabel },
+        labelBgStyle: { fill: styles.bg },
+      })) as Edge[];
+
+      setNodes(themedNodes);
+      setEdges(themedEdges);
       setSaved(true);
     } else {
       setNodes([]);
       setEdges([]);
       setSaved(false);
     }
-  }, [selectedNode, cachedSubMap]);
+  }, [selectedNode, cachedSubMap, theme]);
 
   const handleGenerateSubMap = async () => {
     if (!selectedNode) return;
@@ -41,25 +54,14 @@ export function useSubDiagram({ selectedNode, currentTopic, theme, cachedSubMap,
       const data = await res.json();
       
       if (data.nodes && data.edges) {
-        const subNodes = data.nodes.map((n: any, i: number) => ({
-          ...n,
-          id: `sub-${n.id}`,
-          position: { x: (i % 3) * 150, y: Math.floor(i / 3) * 100 },
-          style: { 
-            background: isDark ? '#1e1e24' : '#ffffff', 
-            color: isDark ? '#ffffff' : '#1f2937', 
-            border: `1px solid ${isDark ? '#6366f1' : '#4f46e5'}`,
-            borderRadius: '8px', padding: '10px', fontSize: '12px', width: 120, textAlign: 'center'
-          }
-        })) as Node[];
+        // 1. Prefix IDs so they don't collide with the main map
+        const prefixedData = {
+          nodes: data.nodes.map((n: any) => ({ ...n, id: `sub-${n.id}` })),
+          edges: data.edges.map((e: any) => ({ ...e, source: `sub-${e.source}`, target: `sub-${e.target}` }))
+        };
 
-        const subEdges = data.edges.map((e: any, i: number) => ({
-          ...e,
-          id: `sub-e-${i}`,
-          source: `sub-${e.source}`,
-          target: `sub-${e.target}`,
-          style: { stroke: isDark ? '#6366f1' : '#4f46e5' }
-        })) as Edge[];
+        // 2. Pass it through the exact same Dagre layout engine!
+        const { nodes: subNodes, edges: subEdges } = formatGeneratedData(prefixedData, THEMES[theme]);
 
         setNodes(subNodes);
         setEdges(subEdges);
@@ -73,11 +75,5 @@ export function useSubDiagram({ selectedNode, currentTopic, theme, cachedSubMap,
     }
   };
 
-  return {
-    nodes,
-    edges,
-    loading,
-    saved,
-    handleGenerateSubMap
-  };
+  return { nodes, edges, loading, saved, handleGenerateSubMap };
 }

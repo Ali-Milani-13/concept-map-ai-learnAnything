@@ -3,7 +3,8 @@
 import React from "react";
 import { ReactFlow, Controls, MiniMap } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { AlertCircle, Library, Ruler, Undo2, Download, LogIn, LogOut, CloudLightning, Loader2 } from "lucide-react";
+// Added Sparkles for the title badge
+import { AlertCircle, Library, Ruler, Undo2, Download, LogIn, LogOut, CloudLightning, Loader2, Sparkles } from "lucide-react";
 
 import AiInput from "../../ai/components/AiInput";
 import Inspector from "./Inspector";
@@ -28,8 +29,10 @@ export default function MapCanvas() {
         onAuthSuccess={orchestrator.handleAuthSuccess} 
       />
 
-      <div className="absolute top-4 md:top-6 left-4 md:left-6 right-4 md:right-6 z-80 flex justify-between items-start pointer-events-none">
-        <div className="pointer-events-auto">
+<div className="absolute top-4 md:top-6 left-4 md:left-6 right-4 md:right-6 z-80 flex justify-between items-start pointer-events-none">
+        
+        {/* LEFT SIDE CONTROLS */}
+        <div className="pointer-events-auto flex items-center gap-3">
           {orchestrator.isLoaded && (
             <button 
               onClick={() => orchestrator.setIsHistoryOpen(!orchestrator.isHistoryOpen)} 
@@ -39,9 +42,23 @@ export default function MapCanvas() {
               <span className="text-sm font-semibold pr-2 hidden sm:block">Library</span>
             </button>
           )}
+
+          {/* MOVED TITLE UI: Now sits cleanly next to the Library button */}
+          {orchestrator.hasMap && orchestrator.currentTopic && (
+            <div className={`px-4 md:px-5 py-2 md:py-2.5 rounded-full shadow-lg border backdrop-blur-md flex items-center gap-2.5 transition-colors animate-in fade-in slide-in-from-left-4 ${
+              orchestrator.theme === "dark" 
+                ? "bg-neutral-800/90 border-neutral-700/50 text-indigo-100" 
+                : "bg-white/90 border-gray-200/50 text-indigo-900"
+            }`}>
+              <Sparkles size={16} className={orchestrator.theme === "dark" ? "text-indigo-400" : "text-indigo-600"} />
+              <h2 className="text-sm font-bold tracking-wide truncate max-w-32 md:max-w-xs select-none">
+                {orchestrator.currentTopic}
+              </h2>
+            </div>
+          )}
         </div>
 
-        <div className="pointer-events-auto flex items-center gap-1.5 md:gap-3 flex-wrap justify-end max-w-[75%] md:max-w-none">
+        <div className="pointer-events-auto flex items-center gap-1.5 md:gap-3 flex-wrap justify-end max-w-[30%] md:max-w-none">
           {orchestrator.hasMap && (
             <button 
               onClick={() => orchestrator.handleExportSVG(orchestrator.setGlobalError)} 

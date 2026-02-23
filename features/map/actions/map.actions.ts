@@ -91,3 +91,19 @@ export async function deleteAllCloudMaps() {
   if (error) return { error: error.message };
   return { success: true };
 }
+// 5. Delete Single Map
+export async function deleteSingleCloudMap(prompt: string) {
+  const supabase = await getAuthenticatedClient();
+  const session = await getEncryptedSession();
+
+  if (!supabase || !session.user) return { error: 'Unauthorized' };
+
+  const { error } = await supabase
+    .from('maps')
+    .delete()
+    .eq('title', prompt)
+    .eq('user_id', session.user.id);
+
+  if (error) return { error: error.message };
+  return { success: true };
+}

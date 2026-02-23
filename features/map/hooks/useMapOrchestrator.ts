@@ -4,7 +4,7 @@ import { Node } from "@xyflow/react";
 import { useHistory } from "../../history/hooks/useHistory";
 import { useAiGeneration } from "../../ai/hooks/useAiGeneration";
 import { useMapSync } from "./useMapSync";
-import { useMapLayout, ThemeMode } from "./useMapLayout";
+import { useMapLayout, ThemeMode } from "./useMapLayout"; // Adjust if you moved ThemeMode to ../types
 
 import { useMapThemeHandlers } from "./useMapThemeHandlers";
 import { useMapHistoryHandlers } from "./useMapHistoryHandlers";
@@ -26,7 +26,8 @@ export function useMapOrchestrator() {
   const { 
     user, isSyncing, syncError, setSyncError, 
     isAuthModalOpen, setIsAuthModalOpen, 
-    handleAuthSuccess, handleLogout, handleDeleteAllCloud, pushNewMapToCloud 
+    handleAuthSuccess, handleLogout, handleDeleteAllCloud, 
+    deleteSingleMapFromCloud, pushNewMapToCloud // <-- FIXED: Added missing extraction here
   } = useMapSync({ history, setHistory });
 
   const {
@@ -44,7 +45,7 @@ export function useMapOrchestrator() {
   } = useMapHistoryHandlers({
     history, setHistory, theme, setNodes, setEdges, currentMapId, setCurrentMapId, 
     setCurrentTopic, setPreFormatState, setSelectedNode, setIsHistoryOpen, 
-    setShowLegend, updateHistoryItem, clearHistory, handleDeleteAllCloud
+    setShowLegend, updateHistoryItem, clearHistory, handleDeleteAllCloud, deleteSingleMapFromCloud
   });
 
   const { onGenerationSuccess, handleGenerateTrigger } = useMapGenerationHandlers({

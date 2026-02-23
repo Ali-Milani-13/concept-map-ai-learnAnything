@@ -7,7 +7,7 @@ import { UseMapHistoryHandlersProps } from "../types";
 export function useMapHistoryHandlers({
   history, setHistory, theme, setNodes, setEdges, currentMapId, setCurrentMapId, 
   setCurrentTopic, setPreFormatState, setSelectedNode, setIsHistoryOpen, 
-  setShowLegend, updateHistoryItem, clearHistory, handleDeleteAllCloud
+  setShowLegend, updateHistoryItem, clearHistory, handleDeleteAllCloud, deleteSingleMapFromCloud
 }: UseMapHistoryHandlersProps) {
 
   const loadMapFromHistory = useCallback((id: string) => {
@@ -26,13 +26,20 @@ export function useMapHistoryHandlers({
     }
   }, [history, theme, setNodes, setEdges, setCurrentTopic, setCurrentMapId, setSelectedNode, setIsHistoryOpen, setShowLegend, setPreFormatState]);
 
+  // UPDATED: Now triggers cloud deletion when an individual map is removed
   const deleteMapFromHistoryHandler = useCallback((id: string) => {
+    const itemToDelete = history.find((h) => h.id === id);
     const newHistory = history.filter((h) => h.id !== id);
     setHistory(newHistory);
+    
     if (currentMapId === id) {
       setNodes([]); setEdges([]); setCurrentMapId(null); setCurrentTopic(""); setPreFormatState(null);
     }
-  }, [history, currentMapId, setHistory, setNodes, setEdges, setCurrentMapId, setCurrentTopic, setPreFormatState]);
+
+    if (itemToDelete) {
+      deleteSingleMapFromCloud(itemToDelete.prompt);
+    }
+  }, [history, currentMapId, setHistory, setNodes, setEdges, setCurrentMapId, setCurrentTopic, setPreFormatState, deleteSingleMapFromCloud]);
 
   const deleteAllHistoryHandler = async () => {
     clearHistory();
