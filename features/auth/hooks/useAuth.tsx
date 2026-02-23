@@ -28,8 +28,8 @@ export function useAuth({ onAuthSuccess, onClose }: UseAuthProps) {
 
       if (result.error) throw new Error(result.error);
 
-      if (result.hasSession) {
-        onAuthSuccess(result.user as Record<string, unknown>);
+      if (result.hasSession && result.user) {
+        onAuthSuccess(result.user as unknown as Record<string, unknown>);
         onClose();
       } else if (!isLogin && result.user) {
         setError("Success! Please check your email for the confirmation link, then log in.");
