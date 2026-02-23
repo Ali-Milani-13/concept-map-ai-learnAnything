@@ -12,7 +12,7 @@ import { useMapGenerationHandlers } from "./useMapGenerationHandlers";
 
 export function useMapOrchestrator() {
   // 1. Root UI State
-  const [theme, setTheme] = useState<ThemeMode>("dark");
+  const [theme, setTheme] = useState<ThemeMode>("light");
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
   const [currentTopic, setCurrentTopic] = useState<string>("");
   const [showLegend, setShowLegend] = useState<boolean>(true);
