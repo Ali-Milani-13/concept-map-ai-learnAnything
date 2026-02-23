@@ -2,6 +2,11 @@
 
 An enterprise-grade, interactive concept mapping application that leverages Large Language Models to instantly generate structured, hierarchical diagrams from text prompts. Built with Next.js and React Flow, this tool allows users to visually explore complex topics, dive deep into specific nodes with AI-generated explanations, and recursively generate sub-maps for granular learning.
 
+
+
+https://github.com/user-attachments/assets/fff1a4a5-7347-4447-8dde-27dca7f7c36a
+
+
 ## ✨ Key Features
 
 * **AI-Powered Diagramming:** Generates perfectly structured, one-to-many tree hierarchies based on any user prompt.
