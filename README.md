@@ -1,36 +1,73 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AI Concept Map Explorer
 
-## Getting Started
+An enterprise-grade, interactive concept mapping application that leverages Large Language Models to instantly generate structured, hierarchical diagrams from text prompts. Built with Next.js and React Flow, this tool allows users to visually explore complex topics, dive deep into specific nodes with AI-generated explanations, and recursively generate sub-maps for granular learning.
 
-First, run the development server:
+## ✨ Key Features
 
-```bash
+* **AI-Powered Diagramming:** Generates perfectly structured, one-to-many tree hierarchies based on any user prompt.
+* **Recursive Sub-Mapping:** Click on any node to generate a nested, isolated sub-map to explore specific branches of a concept.
+* **Deep-Dive Inspector:** Select nodes to fetch highly technical, AI-generated explanations cached directly into the map state.
+* **Smart Auto-Layout:** Integrates Dagre to instantly untangle and format complex graphs with a single click.
+* **Hybrid Storage (Local-First + Cloud Sync):** Maps are persisted to `localStorage` immediately, with seamless background synchronization to Supabase for authenticated users.
+* **High-Fidelity Export:** Export any diagram, regardless of scale, as a clean, styled SVG.
+* **Stateless Auth:** Secure, HTTP-only encrypted session management using Iron Session, decoupling authentication state from the UI.
+
+## 🛠 Tech Stack
+
+* **Framework:** Next.js (App Router)
+* **Diagramming Engine:** React Flow (`@xyflow/react`)
+* **Graph Layout Algorithm:** Dagre
+* **Styling:** Tailwind CSS, Lucide React
+* **AI Integration:** Groq SDK (OpenAI OSS Models)
+* **Backend & Database:** Supabase
+* **Session Management:** Iron Session
+
+## 🏗 Architecture
+
+This project strictly adheres to **Feature-Sliced Design (FSD)**, ensuring high cohesion and low coupling. Business logic, API calls, and state management are heavily encapsulated within strictly typed custom hooks, leaving components exclusively as pure, declarative UI.
+
+### Directory Structure
+
+~~~text
+├── app/                  # Routing, layouts, and API endpoints ONLY
+├── components/           # Shared, generic UI (e.g., ThemeToggle)
+├── features/             # Domain-driven modules
+│   ├── ai/               # AI prompt input and explanation logic
+│   ├── auth/             # Login modals, session hooks, and auth actions
+│   ├── history/          # LocalStorage sync and library sidebar
+│   └── map/              # Orchestrator hooks, Dagre layout engines, pure canvas UI
+├── lib/                  # Core configurations (Supabase client, Iron Session)
+└── types/                # Global TypeScript interfaces
+~~~
+
+## 🚀 Getting Started
+
+### Prerequisites
+* Node.js 18.x or later
+* A Supabase project
+* A Groq API key (or equivalent OpenAI-compatible endpoint)
+
+### 1. Clone the repository
+~~~bash
+git clone [https://github.com/yourusername/conceptmap-ai.git](https://github.com/yourusername/conceptmap-ai.git)
+cd conceptmap-ai
+~~~
+
+### 2. Install dependencies
+~~~bash
+npm install
+~~~
+
+
+### 3. Run the Development Server
+~~~bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+~~~
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the application.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🤝 Contributing
+Contributions, issues, and feature requests are welcome! 
+If you are modifying the core mapping logic, please ensure that UI components remain pure and side-effects are extracted into the appropriate hook within the `features/map/hooks` directory to maintain FSD compliance.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 📄 License
+This project is licensed under the MIT License - see the LICENSE file for details.
