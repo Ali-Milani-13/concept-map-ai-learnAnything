@@ -28,7 +28,10 @@ export async function authenticateUser(isLogin: boolean, email: string, password
   // If we got a session token, ENCRYPT it and save it to the Iron Session
   if (data.session) {
     const session = await getEncryptedSession();
-    session.user = data.user;
+    
+    // FIX: Safely cast the user and handle the null vs undefined mismatch
+    session.user = data.user ? (data.user as unknown as Record<string, unknown>) : undefined;
+    
     session.access_token = data.session.access_token;
     session.refresh_token = data.session.refresh_token;
     await session.save();
