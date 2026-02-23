@@ -9,16 +9,38 @@ interface UseMapSyncProps {
 }
 
 export function useMapSync({ history, setHistory }: UseMapSyncProps) {
-  const [user, setUser] = useState<any>(null); // Using 'any' for Supabase User object for now
+  const [user, setUser] = useState<any>(null); 
   const [isSyncing, setIsSyncing] = useState<boolean>(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
   const [syncError, setSyncError] = useState<string | null>(null);
+
+  const handleLogout = async () => {
+    setIsSyncing(true);
+    await logoutUser();
+    setUser(null);
+    setIsSyncing(false);
+  };
+
+  // Helper to silently catch auth errors without triggering Next.js Error Boundaries
+  const checkAuthError = async (errorMsg: string, fallbackMsg: string) => {
+    if (errorMsg.includes("JWT expired") || errorMsg.includes("Unauthorized") || errorMsg.includes("Invalid token")) {
+      setSyncError("Your session has expired. Please log in again.");
+      await handleLogout();
+    } else {
+      setSyncError(fallbackMsg);
+    }
+  };
 
   const performSmartSync = async (currentLocalHistory: HistoryItem[]) => {
     setIsSyncing(true);
     try {
       const { maps: cloudMaps, error: fetchError } = await fetchCloudMaps();
-      if (fetchError) throw new Error(fetchError);
+      
+      if (fetchError) {
+        // Handle it silently and exit early instead of throwing
+        await checkAuthError(fetchError, "Failed to sync maps with the cloud.");
+        return; 
+      }
 
       const safeCloudMaps = cloudMaps || [];
       const cloudPrompts = new Set(safeCloudMaps.map((m: any) => m.prompt));
@@ -34,9 +56,10 @@ export function useMapSync({ history, setHistory }: UseMapSyncProps) {
       } else {
         setHistory(safeCloudMaps as HistoryItem[]);
       }
-    } catch (err) {
-      console.error("Sync Error:", err);
-      setSyncError("Failed to sync maps with the cloud.");
+    } catch (err: any) {
+      // This catch is now strictly for unexpected JS errors or Network failures (e.g. no internet)
+      console.error("Sync Network Error:", err);
+      setSyncError("Failed to connect to the cloud.");
     } finally {
       setIsSyncing(false);
     }
@@ -59,22 +82,18 @@ export function useMapSync({ history, setHistory }: UseMapSyncProps) {
     await performSmartSync(history);
   };
 
-  const handleLogout = async () => {
-    setIsSyncing(true);
-    await logoutUser();
-    setUser(null);
-    setIsSyncing(false);
-  };
-
   const handleDeleteAllCloud = async () => {
     if (user) {
       setIsSyncing(true);
       try {
         const { error: deleteError } = await deleteAllCloudMaps();
-        if (deleteError) throw new Error(deleteError);
-      } catch (err) {
-        console.error("Failed to delete all cloud maps:", err);
-        setSyncError("Failed to delete maps from cloud.");
+        if (deleteError) {
+          await checkAuthError(deleteError, "Failed to delete maps from cloud.");
+          return;
+        }
+      } catch (err: any) {
+        console.error("Delete Network Error:", err);
+        setSyncError("Failed to connect to the cloud.");
       } finally {
         setIsSyncing(false);
       }
@@ -83,8 +102,13 @@ export function useMapSync({ history, setHistory }: UseMapSyncProps) {
 
   const pushNewMapToCloud = async (newItem: HistoryItem) => {
     if (user) {
-      syncMapToCloud(newItem).then((res) => {
-        if (res && res.error) console.error("Failed to sync new map:", res.error);
+      syncMapToCloud(newItem).then(async (res) => {
+        if (res && res.error) {
+          console.error("Failed to sync new map:", res.error);
+          await checkAuthError(res.error, "Failed to sync map to cloud.");
+        }
+      }).catch(err => {
+        console.error("Push Network Error:", err);
       });
     }
   };
