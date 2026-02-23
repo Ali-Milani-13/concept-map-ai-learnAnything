@@ -2,7 +2,7 @@ import Groq from 'groq-sdk';
 import { NextResponse } from 'next/server';
 
 const groq = new Groq({
-  apiKey: process.env.GROQ_API_KEY,
+  apiKey: process.env.GROQ_API_KEY || "abcd1234-replace-with-real-key",
   baseURL: process.env.BASE_URL_EDGE || 'https://api.groq.com', 
 });
 
