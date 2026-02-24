@@ -79,13 +79,14 @@ export default function MapCanvas() {
               <span className="text-sm font-semibold pr-2 hidden sm:block">{orchestrator.preFormatState ? "Undo" : "Format"}</span>
             </button>
           )}
+                        <ThemeToggle theme={orchestrator.theme} onToggle={orchestrator.toggleTheme} />
+
           {orchestrator.user ? (
             <div className="flex items-center gap-1.5 md:gap-2">
               <div className={`p-2.5 md:px-4 md:py-2.5 rounded-full shadow-xl flex items-center gap-2 border ${orchestrator.theme === "dark" ? "bg-neutral-800 border-neutral-700 text-emerald-400" : "bg-white border-gray-200 text-emerald-600"}`}>
                 {orchestrator.isSyncing ? <Loader2 size={18} className="animate-spin" /> : <CloudLightning size={18} />}
                 <span className="text-sm font-semibold hidden sm:block">{orchestrator.isSyncing ? "Syncing..." : "Synced to Cloud"}</span>
               </div>
-              <ThemeToggle theme={orchestrator.theme} onToggle={orchestrator.toggleTheme} />
               <button 
                 onClick={orchestrator.handleLogout} 
                 title="Log Out" 

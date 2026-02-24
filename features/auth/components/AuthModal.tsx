@@ -1,5 +1,5 @@
-import React from 'react';
-import { X, Mail, Lock, Loader2, AlertCircle } from 'lucide-react';
+import React, { useState } from 'react';
+import { X, Mail, Lock, Loader2, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 
 interface AuthModalProps {
@@ -21,6 +21,8 @@ export default function AuthModal({ isOpen, onClose, theme, onAuthSuccess }: Aut
     handleAuth,
     toggleMode
   } = useAuth({ onAuthSuccess, onClose });
+
+  const [showPassword, setShowPassword] = useState(false);
 
   if (!isOpen) return null;
 
@@ -91,17 +93,27 @@ export default function AuthModal({ isOpen, onClose, theme, onAuthSuccess }: Aut
             <div className="relative">
               <Lock size={18} className={`absolute left-3 top-1/2 -translate-y-1/2 ${isDark ? 'text-gray-500' : 'text-gray-400'}`} />
               <input 
-                type="password" 
+                type={showPassword ? 'text' : 'password'}
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className={`w-full pl-10 pr-4 py-2.5 rounded-lg border outline-none transition-all ${
+                className={`w-full pl-10 pr-10 py-2.5 rounded-lg border outline-none transition-all ${
                   isDark 
                     ? 'bg-neutral-800 border-neutral-700 focus:border-indigo-500 text-white placeholder-gray-500' 
                     : 'bg-gray-50 border-gray-200 focus:border-indigo-500 text-gray-900 placeholder-gray-400'
                 }`}
                 placeholder="••••••••"
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                className={`absolute right-3 top-1/2 -translate-y-1/2 transition-colors ${
+                  isDark ? 'text-gray-500 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
+                }`}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
             </div>
           </div>
 
